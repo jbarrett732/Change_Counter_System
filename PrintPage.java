@@ -117,7 +117,11 @@ public class PrintPage extends JFrame {
 	
 	//DRIVER FOR CLASS TESTING
 	public static void main (String args[]) {
-		//new PrintPage("Listing","/Users/johnbarrett/Desktop/GradSchool/SE580/Code/file.txt");
-		new PrintPage("Numbered Listing","/Users/johnbarrett/Desktop/GradSchool/SE580/Code/file.txt");
+
+		String testfile = "/Users/johnbarrett/Desktop/GradSchool/SE580/Code/file.txt";
+
+		//supported operations so far "Listing", "Numbered Listing"
+		if(args.length == 2)
+			new PrintPage(args[0] , args[1]);
 	}
 }
