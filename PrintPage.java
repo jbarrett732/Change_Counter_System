@@ -64,7 +64,6 @@ public class PrintPage extends JFrame {
 
 		//add panel to window
 		add(heading, BorderLayout.NORTH);	
-		//add(heading, BorderLayout.WEST);	
 		add(file_content, BorderLayout.WEST);	
     	}
 
@@ -84,6 +83,7 @@ public class PrintPage extends JFrame {
 		if(!l.isEmpty()) {
 			Iterator<String> it = l.iterator();
 			while(it.hasNext()) {
+				//add html ordered list tags if needed
 				if(numbered)
 					fileContent += "<li>" + it.next() + "</li>";
 				else
@@ -91,6 +91,7 @@ public class PrintPage extends JFrame {
 			}	
 		}
 
+		//add html ordered list tags if needed
 		if(numbered)
 			return "<ol type='1'>" + fileContent + "</ol>";
 		else	
@@ -118,10 +119,8 @@ public class PrintPage extends JFrame {
 	//DRIVER FOR CLASS TESTING
 	public static void main (String args[]) {
 
-		String testfile = "/Users/johnbarrett/Desktop/GradSchool/SE580/Code/file.txt";
-
 		//supported operations so far "Listing", "Numbered Listing"
 		if(args.length == 2)
-			new PrintPage(args[0] , args[1]);
+			new PrintPage(args[0], args[1]);
 	}
 }
