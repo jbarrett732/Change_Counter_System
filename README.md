@@ -27,3 +27,17 @@ Test2:
 	java PrintPage "Numbered Listing" "/Users/johnbarrett/Desktop/file.txt"
 Results2:
 	Should display a window with file.txt info heading and numbered contents
+
+
+
+Testing main page
+-----------------
+Setup:
+	Same as print page but use full path to directory
+
+Test1:
+	java MainPage "/Users/johnbarrett/Desktop" 
+Results1:
+	Should display a window with a list of files to choose from
+	"Print Listing Button" should display file contents using PrintPage 
+
