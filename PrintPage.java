@@ -50,21 +50,21 @@ public class PrintPage extends JFrame {
 		//create page heading panel
 		String info = "File Name: " + file1.getName() + "<br>";
 		info += "Last Modified: " + (new Date(file1.lastModified())).toString();
-		JLabel heading = new JLabel("<html>" + info + "<hr size=2>" + "</html>");
+		JLabel heading = new JLabel("<html>" + info + "</html>");
 
-		//create content for the file
- 		String modString = fileString.replace("\n","<br>");
-		modString = "<html>" + modString + "</html>";
-		JLabel content = new JLabel(modString);
+		//create panel to add content to it
+ 		JTextPane file_content = new JTextPane();
+ 		file_content.setEditable(false);
+ 		file_content.setText(fileString);
 
-		//create panel to add content to
- 		JPanel file_content = new JPanel();
 		file_content.setBackground(Color.WHITE);
-		file_content.add(content);
+		//file_content.add(content);
+	  	JScrollPane scroll = new JScrollPane(file_content);	
+		scroll.setPreferredSize(new Dimension(500, 500));
 
 		//add panel to window
 		add(heading, BorderLayout.NORTH);	
-		add(file_content, BorderLayout.WEST);	
+		add(scroll, BorderLayout.WEST);	
     	}
 
 
@@ -87,7 +87,7 @@ public class PrintPage extends JFrame {
 				if(numbered)
 					fileContent += "<li>" + it.next() + "</li>";
 				else
-					fileContent += it.next() + "<br>";
+					fileContent += it.next() + "\n";
 			}	
 		}
 
