@@ -30,12 +30,13 @@ public class PrintPage extends JFrame {
 		//determine operation and execute
 		if(!file1.exists()) {
 			//error, file doesn't exist 
-		}
-		else if(op.equals("Listing")) 
-			addContent(printListing(false));
-		else if(op.equals("Numbered Listing")) 
-			addContent(printListing(true));
-		else {
+		} else if(op.equals("Listing")) { 
+			addContent(printListing());
+		} else if(op.equals("Change")) {
+			//TODO
+		} else if(op.equals("Report")) {
+			//TODO
+		} else {
 			//error, not valid operation
 		}
 
@@ -69,7 +70,7 @@ public class PrintPage extends JFrame {
 
 
 	//PRINTS ONLY CONTENT OF FILE
-        public String printListing(boolean numbered) {
+        public String printListing() {
 
 		//read file into array list and catch exceptions
 		ArrayList<String> l = null;
@@ -83,19 +84,11 @@ public class PrintPage extends JFrame {
 		if(!l.isEmpty()) {
 			Iterator<String> it = l.iterator();
 			while(it.hasNext()) {
-				//add html ordered list tags if needed
-				if(numbered)
-					fileContent += "<li>" + it.next() + "</li>";
-				else
-					fileContent += it.next() + "\n";
+				fileContent += it.next() + "\n";
 			}	
 		}
 
-		//add html ordered list tags if needed
-		if(numbered)
-			return "<ol type='1'>" + fileContent + "</ol>";
-		else	
-			return fileContent;
+		return fileContent;
  	}
 
 

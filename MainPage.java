@@ -79,17 +79,60 @@ public class MainPage extends JFrame {
 		}
 
 		//add action buttons 
-		JButton button_listing = new JButton("Print Program Listing");
+		JButton button_add = new JButton("<html>Add Version<br>To Database</html>");
+        	button_add.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				//TODO
+            		}
+        	});
+		JButton button_delete = new JButton("<html>Delete Version<br>From Database</html>");
+        	button_delete.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				//TODO
+            		}
+        	});
+		JButton button_listing = new JButton("<html>Print Program<br>Listing</html>");
         	button_listing.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
-				//new PrintPage("Listing","/Users/johnbarrett/Desktop/GradSchool/SE580/Code/Change_Counter_System/file.txt");
 				String s = getSelectedItem();
 				if(s != null) 
 					new PrintPage("Listing", file_map.get(s).getAbsolutePath());
             		}
         	});
+		JButton button_changes = new JButton("<html>Print Listing<br>With Changes</html>");
+        	button_changes.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				String s = getSelectedItem();
+				if(s != null) 
+					new PrintPage("Changes", file_map.get(s).getAbsolutePath());
+            		}
+        	});
+		JButton button_report = new JButton("<html>Print Program<br>Change Report</html>");
+        	button_report.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				String s = getSelectedItem();
+				if(s != null) 
+					new PrintPage("Report", file_map.get(s).getAbsolutePath());
+            		}
+        	});
+
 		c.gridy += 1;
+		button_add.setPreferredSize(new Dimension(140, 50));
+		file_panel.add(button_add, c);
+		c.gridx += 1;
+		button_delete.setPreferredSize(new Dimension(140, 50));
+		file_panel.add(button_delete, c);
+		c.gridx -= 1;
+		c.gridy += 1;
+		button_listing.setPreferredSize(new Dimension(140, 50));
 		file_panel.add(button_listing, c);
+		c.gridx += 1;
+		button_changes.setPreferredSize(new Dimension(140, 50));
+		file_panel.add(button_changes, c);
+		c.gridx -= 1;
+		c.gridy += 1;
+		button_report.setPreferredSize(new Dimension(140, 50));
+		file_panel.add(button_report, c);
 
 		//add panel to window
 		add(file_panel, BorderLayout.WEST);	
