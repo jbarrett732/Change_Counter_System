@@ -16,6 +16,7 @@ public class PrintPage extends JFrame {
 
 	private File file1 = null;
 	private File file2 = null;
+	private String operation = "";
 
 	//CONSTRUCTS PAGE WINDOW AND ADDS CONTENT
 	public PrintPage(String op, String filePath, String filePath2) {
@@ -28,6 +29,7 @@ public class PrintPage extends JFrame {
 
 		file1 = new File(filePath);
 		file2 = new File(filePath2);
+		operation = op;
 
 		//determine operation and execute
 		if(!file1.exists()) {
@@ -52,7 +54,17 @@ public class PrintPage extends JFrame {
 
 		//create page heading panel
 		String info = "File Name: " + file1.getName() + "<br>";
-		info += "Last Modified: " + (new Date(file1.lastModified())).toString();
+		if(operation.equals("Report")) {
+			int numOld = lineCount(file1);
+			int numNew = lineCount(file2);
+			info += "Total Lines: " + Integer.toString(numNew) + "<br>"; 
+			info += "Lines Added: " + Integer.toString(numNew-numOld) + "<br>"; 
+			info += "Recent Change: " + (new Date(file2.lastModified())).toString() + "<br>";
+			info += "Previous Change: " + (new Date(file1.lastModified())).toString() + "<br>";
+		} else {
+			info += "Total Lines: " +  Integer.toString(lineCount(file1)) + "<br>"; 
+			info += "Recent Change: " + (new Date(file1.lastModified())).toString() + "<br>";
+		}
 		JLabel heading = new JLabel("<html>" + info + "</html>");
 
 		//create panel to add content to it
@@ -177,6 +189,17 @@ public class PrintPage extends JFrame {
 			}
 		}
 		return added;
+	}
+
+	
+	//COUNTS THE NUMBER OF LINES IN A FILE
+	public int lineCount(File f) {
+		int lines = 0;
+		ArrayList<String> list = null;
+		try {
+			list = readFile(f);	
+		} catch(IOException ioe) {}
+		return list.size();
 	}
 
 
