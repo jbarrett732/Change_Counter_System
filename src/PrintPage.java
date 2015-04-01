@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
+
 import java.sql.Date;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ public class PrintPage extends JFrame {
 	private String operation = "";
 
 	//CONSTRUCTS PAGE WINDOW AND ADDS CONTENT
+	public PrintPage() {}
 	public PrintPage(String op, String filePath, String filePath2) {
 
 		//set up window
