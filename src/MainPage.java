@@ -12,17 +12,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Enumeration;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 
 
 //CLASS FOR EXECUTING OPERATIONS ON FILES 
 public class MainPage extends JFrame {
 
-	private File location = null;
+	private File location  = null;
+	private File curr_path = null;
 	private ButtonGroup file_selection = new ButtonGroup();
 	private ButtonGroup dir_selection  = new ButtonGroup();
 	private HashMap<String, File> file_map = new HashMap<String, File>();
 	private HashMap<String, File> dir_map  = new HashMap<String, File>();
 	private JPanel left_panel;
+ 	private JPanel file_panel = new JPanel(new GridBagLayout());
+ 	private JPanel dir_panel  = new JPanel(new GridBagLayout());
+	private JLabel title = new JLabel();
 	private GridBagConstraints c = new GridBagConstraints();
 
 	//CONSTRUCTS PAGE WINDOW AND ADDS CONTENT
@@ -35,6 +42,7 @@ public class MainPage extends JFrame {
 		setTitle("Main Page");
 
 		location = new File(dirPath);
+		curr_path = location;
 
 		//determine operation and execute
 		if(!location.exists()) {
@@ -45,7 +53,7 @@ public class MainPage extends JFrame {
 		}
 		else {
 			//success, add content to main page
-			addContent();
+			addContent_leftPanel(curr_path);
 		}
 
 		//display window
@@ -54,7 +62,7 @@ public class MainPage extends JFrame {
 
 
  	//ADDS CONTENT TO WINDOW
-	public void addContent() {
+	public void addContent_leftPanel(File path) {
 
 		//create panel for file list 
  		left_panel = new JPanel(new GridBagLayout());
@@ -63,27 +71,42 @@ public class MainPage extends JFrame {
 		c.gridx = 0;
 		c.gridy = 0;
 
-		createListItems(location);
+		createListItems(path);
 
 		//add action buttons 
 		JButton button_add = new JButton("<html>Add Version<br>To Database</html>");
         	button_add.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
-				//TODO
-            		}
+				int v = 1;
+				String s = getSelectedItem(false);
+				File curr_file = file_map.get(s);
+				try {
+					File new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+					for(v=2; !new_file.createNewFile(); v++) {
+						new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+					}
+					addVersion(curr_file, new_file); 	
+            			} 
+				catch (IOException ioe) {}
+			}
         	});
 		JButton button_delete = new JButton("<html>Delete Version<br>From Database</html>");
         	button_delete.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
 				//TODO
+				String s = getSelectedItem(false);
+				File file = file_map.get(s);
+				file.delete();	
+				updateLists(curr_path); 
             		}
         	});
 		JButton button_listing = new JButton("<html>Print Program<br>Listing</html>");
         	button_listing.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
 				String s = getSelectedItem(false);
-				if(s != null) 
+				if(s != null) { 
 					new PrintPage("Listing", file_map.get(s).getAbsolutePath(), "");
+				}
             		}
         	});
 		JButton button_changes = new JButton("<html>Print Listing<br>With Changes</html>");
@@ -143,28 +166,86 @@ public class MainPage extends JFrame {
 		add(head_title, BorderLayout.NORTH);
     	}
 
+	public void addVersion(File curr_f, File new_f) throws IOException {
+
+		InputStream input = null;
+    		OutputStream output = null;
+    		try {
+        		input = new FileInputStream(curr_f);
+        		output = new FileOutputStream(new_f);
+        		byte[] buf = new byte[1024];
+        		int bytesRead;
+        		while ((bytesRead = input.read(buf)) > 0) {
+            			output.write(buf, 0, bytesRead);
+        		}
+    		} finally {
+        		input.close();
+        		output.close();
+    		}
+		
+	}
 
 	private void createListItems(File loc) {
-		
-		GridBagConstraints f = new GridBagConstraints();
-		f.anchor = GridBagConstraints.LINE_START;
-		f.gridx = 0;
-		f.gridy = 0;
-		GridBagConstraints d = new GridBagConstraints();
-		d.anchor = GridBagConstraints.LINE_START;
-		d.gridx = 0;
-		d.gridy = 0;
 
 		//create title for file list
-		String title_string = "<html>"+ loc.getName();
-		title_string += "<br><hr size=2></html>";
-		JLabel title = new JLabel(title_string);
-		title.setFont(new Font("Serif", Font.BOLD, 24));
+		updateListTitle(loc); 
 		left_panel.add(title, c);
 
 		//create selection button for each file in the list 
- 		JPanel file_panel = new JPanel(new GridBagLayout());
- 		JPanel dir_panel  = new JPanel(new GridBagLayout());
+		updateLists(loc); 
+
+		JScrollPane scroll_dir  = new JScrollPane(dir_panel);
+		JScrollPane scroll_file = new JScrollPane(file_panel);
+		scroll_dir.setPreferredSize(new Dimension(350, 150));
+		scroll_file.setPreferredSize(new Dimension(350, 150));
+
+		//create heading for file scroll pane
+		String title_file = "<html>Files</html>";
+		JLabel file_label = new JLabel(title_file);
+		file_label.setFont(new Font("Serif", Font.BOLD, 18));
+		JPanel file_heading_panel = new JPanel();
+		file_heading_panel.setPreferredSize(new Dimension(350, 40));
+		file_heading_panel.add(file_label);
+
+		//add components
+		c.gridy = 1;
+		left_panel.add(createFolderNavigation(), c);
+		c.gridy = 2;
+		left_panel.add(scroll_dir,  c);
+		c.gridy = 3;
+		left_panel.add(file_heading_panel, c);
+		c.gridy = 4;
+		left_panel.add(scroll_file, c);
+
+		return;
+	}
+
+	private void updateListTitle(File loc) {
+		String title_string = "<html>"+ loc.getName();
+		title_string += "<br><hr size=2></html>";
+		title.setText(title_string);
+		title.setFont(new Font("Serif", Font.BOLD, 24));
+	}
+
+	private void updateLists(File loc) {
+
+		//create positioning elements
+		GridBagConstraints f = new GridBagConstraints();
+		f.anchor = GridBagConstraints.LINE_START;
+		f.gridx = 0; f.gridy = 0;
+		GridBagConstraints d = new GridBagConstraints();
+		d.anchor = GridBagConstraints.LINE_START;
+		d.gridx = 0; d.gridy = 0;
+
+		//remove all references to old content
+		dir_panel.removeAll();
+		file_panel.removeAll();
+		file_map.clear(); 
+		dir_map.clear();  
+		dir_selection = new ButtonGroup(); 
+		file_selection = new ButtonGroup(); 
+
+		//add contents from path in proper group
 		File[] file_list = loc.listFiles();
 		for(File item : file_list) {
 			if(item.isDirectory()) {
@@ -181,29 +262,12 @@ public class MainPage extends JFrame {
 				file_panel.add(button, f);
 			}
 		}
-		JScrollPane scroll_dir  = new JScrollPane(dir_panel);
-		JScrollPane scroll_file = new JScrollPane(file_panel);
-		scroll_dir.setPreferredSize(new Dimension(350, 150));
-		scroll_file.setPreferredSize(new Dimension(350, 150));
 
-		//create heading for file scroll pane
-		String title_file = "<html>Files</html>";
-		JLabel file_label = new JLabel(title_file);
-		file_label.setFont(new Font("Serif", Font.BOLD, 18));
-		JPanel file_heading_panel = new JPanel();
-		file_heading_panel.setPreferredSize(new Dimension(350, 40));
-		file_heading_panel.add(file_label);
-
-		c.gridy = 1;
-		left_panel.add(createFolderNavigation(), c);
-		c.gridy = 2;
-		left_panel.add(scroll_dir,  c);
-		c.gridy = 3;
-		left_panel.add(file_heading_panel, c);
-		c.gridy = 4;
-		left_panel.add(scroll_file, c);
-
-		return;
+		//update ui component
+		dir_panel.revalidate();
+		dir_panel.repaint();
+		file_panel.revalidate();
+		file_panel.repaint();
 	}
 
 	private JPanel createFolderNavigation() {
@@ -217,18 +281,28 @@ public class MainPage extends JFrame {
 		JButton button_back = new JButton("Back");
         	button_back.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
-				//TODO
+				if(!(curr_path.getAbsolutePath()).equals(location.getAbsolutePath())) {
+					File new_path = curr_path.getParentFile();
+					if(new_path != null) {
+						curr_path = new_path;
+						updateListTitle(curr_path); 
+						updateLists(curr_path); 
+					}
+				}
             		}
         	});
 		JButton button_open = new JButton("Open");
         	button_open.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
-				//TODO
+				curr_path = dir_map.get(getSelectedItem(true)); 
+				updateListTitle(curr_path); 
+				updateLists(curr_path); 
             		}
         	});
 		button_back.setPreferredSize(new Dimension(80, 30));
 		button_open.setPreferredSize(new Dimension(80, 30));
 
+		//make area to add buttons with position elements
 		JPanel dir_heading_panel = new JPanel(new GridBagLayout());
 		dir_heading_panel.setPreferredSize(new Dimension(350, 40));
 		GridBagConstraints dh = new GridBagConstraints();
@@ -236,6 +310,7 @@ public class MainPage extends JFrame {
 		dh.gridx = 0; 
 		dh.gridy = 0;
 
+		//add components
 		dir_heading_panel.add(dir_label, dh);
 		dh.gridx = 1; 
 		dir_heading_panel.add(button_back, dh);
@@ -246,6 +321,8 @@ public class MainPage extends JFrame {
 	}
 
 	private String getSelectedItem(boolean directoryItem) {
+
+		//find selected component and return string
 		String selected = null;
 		Enumeration b_enum;
 		if(directoryItem) {

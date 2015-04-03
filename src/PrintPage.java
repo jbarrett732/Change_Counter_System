@@ -24,7 +24,7 @@ public class PrintPage extends JFrame {
 	public PrintPage(String op, String filePath, String filePath2) {
 
 		//set up window
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(500, 600);
 		setBackground(Color.WHITE);
 		setTitle("Print Page: " + op);
