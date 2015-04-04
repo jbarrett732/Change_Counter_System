@@ -1,3 +1,6 @@
 Hello
 My Name is John
 This is a test file for SE580
+Added Line 1
+Added Line 2
+Added Line 3

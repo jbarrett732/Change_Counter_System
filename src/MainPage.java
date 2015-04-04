@@ -190,6 +190,8 @@ public class MainPage extends JFrame {
 		//create selection button for each file in the list 
 		updateLists(loc); 
 
+		//dir_panel.setPreferredSize(new Dimension(340, dir_panel.getHeight()));
+		//file_panel.setPreferredSize(new Dimension(340, file_panel.getHeight()));
 		dir_panel.setBackground(Color.WHITE);
 		file_panel.setBackground(Color.WHITE);
 		JScrollPane scroll_dir  = new JScrollPane(dir_panel);
@@ -254,12 +256,14 @@ public class MainPage extends JFrame {
 			if(item.isDirectory()) {
 				dir_map.put(item.getName(), item);
 				JRadioButton button = new JRadioButton(item.getName());
+				button.setPreferredSize(new Dimension(330, 20));
 				dir_selection.add(button);	
 				d.gridy += 1;
 				dir_panel.add(button, d);
 			} else if(item.isFile()) {
 				file_map.put(item.getName(), item);
 				JRadioButton button = new JRadioButton(item.getName());
+				button.setPreferredSize(new Dimension(330, 20));
 				file_selection.add(button);	
 				f.gridy += 1;
 				file_panel.add(button, f);
@@ -396,14 +400,15 @@ public class MainPage extends JFrame {
 				String s = getSelectedItem(false);
 				File curr_file = file_map.get(s);
 				try {
-					File new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+					File new_file = new File(location.getAbsolutePath() + "/backup/" + Integer.toString(v) + "_" + curr_file.getName()); 
 					for(v=2; !new_file.createNewFile(); v++) {
-						new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+						new_file = new File(location.getAbsolutePath() + "/backup/" + Integer.toString(v) + "_" + curr_file.getName()); 
 					}
 					addCommentDialog(curr_file.getName());
 					addVersion(curr_file, new_file); 	
             			} 
 				catch (IOException ioe) {}
+
 				updateLists(curr_path); 
 				updateChanges();
 			}
@@ -439,8 +444,11 @@ public class MainPage extends JFrame {
         	button_report.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
 				String s = getSelectedItem(false);
-				//if(s != null) 
-				//	new PrintPage("Report", file_map.get(s).getAbsolutePath() , prev version);
+				if(s != null) { 
+					File prev = getPreviousFile(file_map.get(s).getName()); 
+					if(prev != null)
+						new PrintPage("Report", file_map.get(s).getAbsolutePath(), prev.getAbsolutePath());
+				}
             		}
         	});
 
@@ -479,6 +487,21 @@ public class MainPage extends JFrame {
 		button_panel_all.add(button_panel3, bpa);
 
 		return button_panel_all;
+	}
+
+	private File getPreviousFile(String filename) {
+		int version = 1;
+		String backup_path = location.getAbsolutePath() + "/backup/";
+		File old_file = new File(backup_path + "1_" + filename);
+		for(version = 2; old_file.exists(); version++) {
+			old_file = new File(backup_path + Integer.toString(version) + "_" + filename);
+		}
+		old_file = new File(backup_path + Integer.toString(version-2) + "_" + filename);
+		
+		if(version == 2)
+			return null;
+		else
+			return old_file; 
 	}
 	
 	//DRIVER FOR CLASS TESTING

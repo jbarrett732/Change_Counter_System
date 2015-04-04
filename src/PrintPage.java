@@ -164,7 +164,7 @@ public class PrintPage extends JFrame {
 		Iterator<String> new_file = null; 
 		try {
 			new_file = readFile(curr).iterator();	
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) { }
 
 		while(new_file.hasNext()) {
 			boolean match = false;
