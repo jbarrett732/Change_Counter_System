@@ -43,7 +43,7 @@ public class MainPage extends JFrame {
 	private GridBagConstraints c = new GridBagConstraints();
 	private GridBagConstraints r = new GridBagConstraints();
 	private	Color background_color = new Color(204,229,255);
-	private	Color border_color = new Color(64,64,64);
+	private	Color border_color = new Color(128,128,128);
 
 	//CONSTRUCTS PAGE WINDOW AND ADDS CONTENT
 	public MainPage(String dirPath) {
@@ -51,7 +51,7 @@ public class MainPage extends JFrame {
 		//set up window
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(730, 740);
-		setBackground(Color.WHITE);
+		setBackground(border_color);
 		setTitle("Main Page");
 
 		location = new File(dirPath);
@@ -92,10 +92,15 @@ public class MainPage extends JFrame {
 		add(left_panel, BorderLayout.WEST);	
 
 		//add header to window
-		String head_string = "<html>Change Counter System<br></html>";
+		String head_string = "Change Counter System\n";
 		JLabel head_title = new JLabel(head_string);
 		head_title.setFont(new Font("Serif", Font.BOLD, 32));
-		add(head_title, BorderLayout.NORTH);
+		head_title.setForeground(background_color);
+		JPanel head_title_panel = new JPanel();
+		head_title_panel.add(head_title);
+		head_title_panel.setBackground(border_color);
+		
+		add(head_title_panel, BorderLayout.NORTH);
     	}
 
  	//ADDS CONTENT TO WINDOW
@@ -116,6 +121,7 @@ public class MainPage extends JFrame {
 
 		updateChanges();
 
+		changes_panel.setBackground(Color.WHITE);
 		JScrollPane scroll_changes = new JScrollPane(changes_panel);
 		scroll_changes.setPreferredSize(new Dimension(350, 565));
 		r.gridy = 1;
@@ -184,6 +190,8 @@ public class MainPage extends JFrame {
 		//create selection button for each file in the list 
 		updateLists(loc); 
 
+		dir_panel.setBackground(Color.WHITE);
+		file_panel.setBackground(Color.WHITE);
 		JScrollPane scroll_dir  = new JScrollPane(dir_panel);
 		JScrollPane scroll_file = new JScrollPane(file_panel);
 		scroll_dir.setPreferredSize(new Dimension(350, 150));
@@ -293,7 +301,7 @@ public class MainPage extends JFrame {
 		String all_changes = "";
 		int index; 
 		for(index = list.size()-1; index >= 0; index--) {
-			all_changes += list.get(index);		
+			all_changes += list.get(index) + "\n";		
 		} 
 
 		//create pane to add string to 
@@ -397,6 +405,7 @@ public class MainPage extends JFrame {
             			} 
 				catch (IOException ioe) {}
 				updateLists(curr_path); 
+				updateChanges();
 			}
         	});
 		JButton button_delete = new JButton("<html>Delete Version<br>From Database</html>");
