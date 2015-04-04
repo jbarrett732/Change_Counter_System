@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import java.sql.Date;
+//import java.sql.Date;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,6 +15,14 @@ import java.util.Enumeration;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import javax.swing.BorderFactory;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 
 //CLASS FOR EXECUTING OPERATIONS ON FILES 
@@ -27,17 +35,22 @@ public class MainPage extends JFrame {
 	private HashMap<String, File> file_map = new HashMap<String, File>();
 	private HashMap<String, File> dir_map  = new HashMap<String, File>();
 	private JPanel left_panel;
+	private JPanel right_panel;
  	private JPanel file_panel = new JPanel(new GridBagLayout());
  	private JPanel dir_panel  = new JPanel(new GridBagLayout());
+ 	private JPanel changes_panel  = new JPanel(new GridBagLayout());
 	private JLabel title = new JLabel();
 	private GridBagConstraints c = new GridBagConstraints();
+	private GridBagConstraints r = new GridBagConstraints();
+	private	Color background_color = new Color(204,229,255);
+	private	Color border_color = new Color(64,64,64);
 
 	//CONSTRUCTS PAGE WINDOW AND ADDS CONTENT
 	public MainPage(String dirPath) {
 
 		//set up window
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700, 700);
+		setSize(730, 740);
 		setBackground(Color.WHITE);
 		setTitle("Main Page");
 
@@ -54,6 +67,7 @@ public class MainPage extends JFrame {
 		else {
 			//success, add content to main page
 			addContent_leftPanel(curr_path);
+			addContent_rightPanel();
 		}
 
 		//display window
@@ -66,95 +80,13 @@ public class MainPage extends JFrame {
 
 		//create panel for file list 
  		left_panel = new JPanel(new GridBagLayout());
-		left_panel.setBackground(Color.WHITE);
+		left_panel.setBackground(background_color);
+		left_panel.setBorder(new LineBorder(border_color, 5));
 		c.anchor = GridBagConstraints.LINE_START;
 		c.gridx = 0;
 		c.gridy = 0;
 
 		createListItems(path);
-
-		//add action buttons 
-		JButton button_add = new JButton("<html>Add Version<br>To Database</html>");
-        	button_add.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-				int v = 1;
-				String s = getSelectedItem(false);
-				File curr_file = file_map.get(s);
-				try {
-					File new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
-					for(v=2; !new_file.createNewFile(); v++) {
-						new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
-					}
-					addVersion(curr_file, new_file); 	
-            			} 
-				catch (IOException ioe) {}
-			}
-        	});
-		JButton button_delete = new JButton("<html>Delete Version<br>From Database</html>");
-        	button_delete.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-				//TODO
-				String s = getSelectedItem(false);
-				File file = file_map.get(s);
-				file.delete();	
-				updateLists(curr_path); 
-            		}
-        	});
-		JButton button_listing = new JButton("<html>Print Program<br>Listing</html>");
-        	button_listing.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-				String s = getSelectedItem(false);
-				if(s != null) { 
-					new PrintPage("Listing", file_map.get(s).getAbsolutePath(), "");
-				}
-            		}
-        	});
-		JButton button_changes = new JButton("<html>Print Listing<br>With Changes</html>");
-        	button_changes.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-				String s = getSelectedItem(false);
-				//if(s != null) 
-				//	new PrintPage("Changes", file_map.get(s).getAbsolutePath(), file_map.get(s).getAbsolutePath());
-            		}
-        	});
-		JButton button_report = new JButton("<html>Print Program<br>Change Report</html>");
-        	button_report.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-				String s = getSelectedItem(false);
-				//if(s != null) 
-				//	new PrintPage("Report", file_map.get(s).getAbsolutePath() , prev version);
-            		}
-        	});
-
-		button_add.setPreferredSize(new Dimension(140, 50));
-		button_delete.setPreferredSize(new Dimension(140, 50));
-		button_listing.setPreferredSize(new Dimension(140, 50));
-		button_changes.setPreferredSize(new Dimension(140, 50));
-		button_report.setPreferredSize(new Dimension(140, 50));
-
-		JPanel button_panel1 = new JPanel();
-		button_panel1.setBackground(Color.WHITE);
-		button_panel1.setPreferredSize(new Dimension(350, 60));
-		button_panel1.add(button_add, BorderLayout.WEST);	
-		button_panel1.add(button_delete, BorderLayout.EAST);	
-		
-		JPanel button_panel2 = new JPanel();
-		button_panel2.setBackground(Color.WHITE);
-		button_panel2.setPreferredSize(new Dimension(350, 60));
-		button_panel2.add(button_listing, BorderLayout.WEST);	
-		button_panel2.add(button_changes, BorderLayout.EAST);	
-
-		JPanel button_panel3 = new JPanel();
-		button_panel3.setBackground(Color.WHITE);
-		button_panel3.setPreferredSize(new Dimension(350, 60));
-		button_panel3.add(button_report, BorderLayout.WEST);	
-
-		c.gridy += 1;
-		left_panel.add(button_panel1, c);
-		c.gridy += 1;
-		left_panel.add(button_panel2, c);
-		c.gridy += 1;
-		left_panel.add(button_panel3, c);
 
 		//add panel to window
 		add(left_panel, BorderLayout.WEST);	
@@ -166,8 +98,66 @@ public class MainPage extends JFrame {
 		add(head_title, BorderLayout.NORTH);
     	}
 
+ 	//ADDS CONTENT TO WINDOW
+	public void addContent_rightPanel() {
+
+		//create panel for file list 
+ 		right_panel = new JPanel(new GridBagLayout());
+		right_panel.setBackground(background_color);
+		right_panel.setBorder(new LineBorder(border_color, 5));
+		r.anchor = GridBagConstraints.LINE_START;
+		r.gridx = 0;
+		r.gridy = 0;
+
+		String changes_string = "<html>Recent Changes<br></html>";
+		JLabel changes_title = new JLabel(changes_string);
+		changes_title.setFont(new Font("Serif", Font.BOLD, 24));
+		right_panel.add(changes_title, r);
+
+		updateChanges();
+
+		JScrollPane scroll_changes = new JScrollPane(changes_panel);
+		scroll_changes.setPreferredSize(new Dimension(350, 565));
+		r.gridy = 1;
+		right_panel.add(scroll_changes, r);
+
+		//add panel to window
+		add(right_panel, BorderLayout.EAST);	
+	}
+
+	public void addCommentDialog(String name_file) {
+		
+		//create dialog window to get user input
+		String comment = (String)JOptionPane.showInputDialog(this, "Add Comments for "+name_file, "Add Comments", JOptionPane.PLAIN_MESSAGE);
+
+		//comment operation cancelled
+		if(comment == null)
+			return;
+
+		//write user input in comments file with date and time
+		try {
+			File comment_file = new File(location.getAbsolutePath() + "/comments.txt");
+			if(!comment_file.exists()) {
+				comment_file.createNewFile();
+			}
+
+			//add date, time, and file name to comment line
+			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			comment = dateFormat.format(date) + " " + name_file + " " + comment + "\n";
+
+			//append comment to comment file
+			FileWriter fileWriter = new FileWriter(comment_file.getAbsolutePath(), true);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			bufferedWriter.write(comment);
+			bufferedWriter.close();
+
+		} catch(IOException ioe) {}
+	}
+
 	public void addVersion(File curr_f, File new_f) throws IOException {
 
+		//create streams to copy file contents
 		InputStream input = null;
     		OutputStream output = null;
     		try {
@@ -199,30 +189,35 @@ public class MainPage extends JFrame {
 		scroll_dir.setPreferredSize(new Dimension(350, 150));
 		scroll_file.setPreferredSize(new Dimension(350, 150));
 
-		//create heading for file scroll pane
-		String title_file = "<html>Files</html>";
-		JLabel file_label = new JLabel(title_file);
-		file_label.setFont(new Font("Serif", Font.BOLD, 18));
-		JPanel file_heading_panel = new JPanel();
-		file_heading_panel.setPreferredSize(new Dimension(350, 40));
-		file_heading_panel.add(file_label);
-
 		//add components
 		c.gridy = 1;
-		left_panel.add(createFolderNavigation(), c);
+		JPanel box_folder = new JPanel(new GridBagLayout());
+		box_folder.setBorder(new TitledBorder(new LineBorder(Color.black, 2), "Folders"));
+		box_folder.setBackground(background_color);
+		GridBagConstraints bf1 = new GridBagConstraints();
+		bf1.gridx = 1; bf1.gridy = 1;
+		box_folder.add(createFolderNavigation(), bf1);	
+		bf1.gridy = 2;
+		box_folder.add(scroll_dir, bf1);	
+		left_panel.add(box_folder, c);
+
 		c.gridy = 2;
-		left_panel.add(scroll_dir,  c);
-		c.gridy = 3;
-		left_panel.add(file_heading_panel, c);
-		c.gridy = 4;
-		left_panel.add(scroll_file, c);
+		JPanel box_file = new JPanel(new GridBagLayout());
+		box_file.setBorder(new TitledBorder(new LineBorder(Color.black, 2), "Files"));
+		box_file.setBackground(background_color);
+		GridBagConstraints bf2 = new GridBagConstraints();
+		bf2.gridx = 1; bf2.gridy = 1;
+		box_file.add(scroll_file, bf2);	
+		bf2.gridy = 2;
+		box_file.add(createActionButtons(), bf2);
+
+		left_panel.add(box_file, c);
 
 		return;
 	}
 
 	private void updateListTitle(File loc) {
-		String title_string = "<html>"+ loc.getName();
-		title_string += "<br><hr size=2></html>";
+		String title_string = "<html>"+ loc.getName() + "<br></html>";
 		title.setText(title_string);
 		title.setFont(new Font("Serif", Font.BOLD, 24));
 	}
@@ -270,12 +265,49 @@ public class MainPage extends JFrame {
 		file_panel.repaint();
 	}
 
-	private JPanel createFolderNavigation() {
+	private void updateChanges() {
 
-		//create heading for directory scroll pane
-		String title_dir = "<html>Folders</html>";
-		JLabel dir_label = new JLabel(title_dir);
-		dir_label.setFont(new Font("Serif", Font.BOLD, 18));
+		//remove all content
+		changes_panel.removeAll();
+
+		//read comments file and add contents to scroll
+		File file = new File(location.getAbsolutePath() + "/comments.txt");
+		if(!file.exists()) {
+			return;
+		}
+
+                ArrayList<String> list = new ArrayList<String>();
+		try {
+                	//create input stream for reading file
+                	FileInputStream fin = new FileInputStream(file);
+                	BufferedReader read = new BufferedReader(new InputStreamReader(fin));       
+                
+                	//read file into array list by line
+  	        	String line = null;
+                	while((line = read.readLine()) != null) {
+                		list.add(line);
+                	} 
+		} catch(IOException ioe) {}
+
+		//reads list from end to begining into a long string
+		String all_changes = "";
+		int index; 
+		for(index = list.size()-1; index >= 0; index--) {
+			all_changes += list.get(index);		
+		} 
+
+		//create pane to add string to 
+                JTextPane changes_content = new JTextPane();
+                changes_content.setEditable(false);
+                changes_content.setText(all_changes);
+		changes_panel.add(changes_content);
+
+		//update ui
+		changes_panel.revalidate();
+		changes_panel.repaint();
+	}
+
+	private JPanel createFolderNavigation() {
 
 		//add action buttons 
 		JButton button_back = new JButton("Back");
@@ -305,16 +337,15 @@ public class MainPage extends JFrame {
 		//make area to add buttons with position elements
 		JPanel dir_heading_panel = new JPanel(new GridBagLayout());
 		dir_heading_panel.setPreferredSize(new Dimension(350, 40));
+		dir_heading_panel.setBackground(background_color);	
 		GridBagConstraints dh = new GridBagConstraints();
 		dh.anchor = GridBagConstraints.LINE_START;
 		dh.gridx = 0; 
 		dh.gridy = 0;
 
 		//add components
-		dir_heading_panel.add(dir_label, dh);
-		dh.gridx = 1; 
 		dir_heading_panel.add(button_back, dh);
-		dh.gridx = 2; 
+		dh.gridx = 1; 
 		dir_heading_panel.add(button_open, dh);
 
 		return dir_heading_panel;
@@ -340,6 +371,106 @@ public class MainPage extends JFrame {
 		return selected;
 	}
 
+ 	private JPanel createActionButtons() {
+
+		//add action buttons 
+		JButton button_add = new JButton("<html>Add Version<br>To Database</html>");
+        	button_add.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				//make directory for older versions if doesn't exist
+				File backup = new File(location.getAbsolutePath() +"/backup");
+				if(!backup.exists()) {
+					backup.mkdir();
+				}
+
+				//copy version to backup directory
+				int v = 1;
+				String s = getSelectedItem(false);
+				File curr_file = file_map.get(s);
+				try {
+					File new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+					for(v=2; !new_file.createNewFile(); v++) {
+						new_file = new File(location.getAbsolutePath() + "/backup/" + curr_file.getName() + Integer.toString(v)); 
+					}
+					addCommentDialog(curr_file.getName());
+					addVersion(curr_file, new_file); 	
+            			} 
+				catch (IOException ioe) {}
+				updateLists(curr_path); 
+			}
+        	});
+		JButton button_delete = new JButton("<html>Delete Version<br>From Database</html>");
+        	button_delete.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				//TODO
+				String s = getSelectedItem(false);
+				File file = file_map.get(s);
+				file.delete();	
+				updateLists(curr_path); 
+            		}
+        	});
+		JButton button_listing = new JButton("<html>Print Program<br>Listing</html>");
+        	button_listing.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				String s = getSelectedItem(false);
+				if(s != null) { 
+					new PrintPage("Listing", file_map.get(s).getAbsolutePath(), "");
+				}
+            		}
+        	});
+		JButton button_changes = new JButton("<html>Print Listing<br>With Changes</html>");
+        	button_changes.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				String s = getSelectedItem(false);
+				//if(s != null) 
+				//	new PrintPage("Changes", file_map.get(s).getAbsolutePath(), file_map.get(s).getAbsolutePath());
+            		}
+        	});
+		JButton button_report = new JButton("<html>Print Program<br>Change Report</html>");
+        	button_report.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+				String s = getSelectedItem(false);
+				//if(s != null) 
+				//	new PrintPage("Report", file_map.get(s).getAbsolutePath() , prev version);
+            		}
+        	});
+
+		//set size of buttons
+		button_add.setPreferredSize(new Dimension(140, 50));
+		button_delete.setPreferredSize(new Dimension(140, 50));
+		button_listing.setPreferredSize(new Dimension(140, 50));
+		button_changes.setPreferredSize(new Dimension(140, 50));
+		button_report.setPreferredSize(new Dimension(140, 50));
+
+		//create panels to place buttons on
+		JPanel button_panel1 = new JPanel();
+		button_panel1.setBackground(background_color);
+		button_panel1.setPreferredSize(new Dimension(350, 60));
+		button_panel1.add(button_add, BorderLayout.WEST);	
+		button_panel1.add(button_delete, BorderLayout.EAST);	
+		
+		JPanel button_panel2 = new JPanel();
+		button_panel2.setBackground(background_color);
+		button_panel2.setPreferredSize(new Dimension(350, 60));
+		button_panel2.add(button_listing, BorderLayout.WEST);	
+		button_panel2.add(button_changes, BorderLayout.EAST);	
+
+		JPanel button_panel3 = new JPanel();
+		button_panel3.setBackground(background_color);
+		button_panel3.setPreferredSize(new Dimension(350, 60));
+		button_panel3.add(button_report, BorderLayout.WEST);	
+
+		JPanel button_panel_all = new JPanel(new GridBagLayout());
+		GridBagConstraints bpa = new GridBagConstraints();
+		bpa.gridx = 0; bpa.gridy = 0;
+		button_panel_all.add(button_panel1, bpa);
+		bpa.gridy += 1;
+		button_panel_all.add(button_panel2, bpa);
+		bpa.gridy += 1;
+		button_panel_all.add(button_panel3, bpa);
+
+		return button_panel_all;
+	}
 	
 	//DRIVER FOR CLASS TESTING
 	public static void main (String args[]) {
