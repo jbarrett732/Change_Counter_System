@@ -122,6 +122,7 @@ public class MainPage extends JFrame {
 		updateChanges();
 
 		changes_panel.setBackground(Color.WHITE);
+		changes_panel.setPreferredSize(new Dimension(335,560));
 		JScrollPane scroll_changes = new JScrollPane(changes_panel);
 		scroll_changes.setPreferredSize(new Dimension(350, 565));
 		r.gridy = 1;
@@ -301,18 +302,19 @@ public class MainPage extends JFrame {
                 	} 
 		} catch(IOException ioe) {}
 
+		GridBagConstraints cp = new GridBagConstraints();
+		cp.anchor = GridBagConstraints.LINE_START;
+		cp.gridx = 0; cp.gridy = 0;
+
 		//reads list from end to begining into a long string
 		String all_changes = "";
 		int index; 
 		for(index = list.size()-1; index >= 0; index--) {
-			all_changes += list.get(index) + "\n";		
+			JLabel temp_change = new JLabel(list.get(index));		
+			temp_change.setPreferredSize(new Dimension(335, 20));
+			changes_panel.add(temp_change, cp);		
+			cp.gridy += 1;
 		} 
-
-		//create pane to add string to 
-                JTextPane changes_content = new JTextPane();
-                changes_content.setEditable(false);
-                changes_content.setText(all_changes);
-		changes_panel.add(changes_content);
 
 		//update ui
 		changes_panel.revalidate();
@@ -447,7 +449,8 @@ public class MainPage extends JFrame {
 				if(s != null) { 
 					File prev = getPreviousFile(file_map.get(s).getName()); 
 					if(prev != null)
-						new PrintPage("Report", file_map.get(s).getAbsolutePath(), prev.getAbsolutePath());
+						new PrintPage("Report", prev.getAbsolutePath(), file_map.get(s).getAbsolutePath());
+						//new PrintPage("Report", file_map.get(s).getAbsolutePath(), prev.getAbsolutePath());
 				}
             		}
         	});
