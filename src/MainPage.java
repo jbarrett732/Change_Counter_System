@@ -60,9 +60,11 @@ public class MainPage extends JFrame {
 		//determine operation and execute
 		if(!location.exists()) {
 			//error, direcotry doesn't exist 
+			JOptionPane.showMessageDialog(this, "The Project \""+location.getName()+"\" does not exist!", "Missing Project", JOptionPane.ERROR_MESSAGE);
 		}
 		else if(!location.isDirectory()) {
 			//error, path is no a directory 
+			JOptionPane.showMessageDialog(this, "The Project \""+location.getName()+"\" is a File, not a Project!", "Missing Project", JOptionPane.ERROR_MESSAGE);
 		}
 		else {
 			//success, add content to main page
@@ -161,6 +163,7 @@ public class MainPage extends JFrame {
 
 		} catch(IOException ioe) {
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in addCommentDialog().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -304,6 +307,7 @@ public class MainPage extends JFrame {
                 	} 
 		} catch(IOException ioe) {
 			//error	
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in updateChanges().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 
 		GridBagConstraints cp = new GridBagConstraints();
@@ -415,6 +419,7 @@ public class MainPage extends JFrame {
             			} 
 				catch (IOException ioe) {
 					//error
+					JOptionPane.showMessageDialog(null, "An IOException has been thrown in AddVersion().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 				}
 
 				updateLists(curr_path); 
@@ -511,6 +516,7 @@ public class MainPage extends JFrame {
 		
 		if(version == 2) {
 			//error
+			JOptionPane.showMessageDialog(this, "No previous versions have bee stored for the file \""+filename+"\".", "No Backup", JOptionPane.ERROR_MESSAGE);
 			return null;
 		} else {
 			return old_file; 

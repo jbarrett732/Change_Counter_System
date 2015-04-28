@@ -114,6 +114,7 @@ public class PrintPage extends JFrame {
 		 	l = readFile(file1);
 		} catch(IOException ioe) {
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in printListing().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 
 		//turn list into on long string
@@ -164,12 +165,14 @@ public class PrintPage extends JFrame {
 			all_lines = readFile(file2);	
 		} catch(IOException ioe) {
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in printChange().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 		ArrayList<String> other_lines   = null; 
 		try {
 			other_lines = readFile(file1);	
 		} catch(IOException ioe) {
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in printChange().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 		ArrayList<String> added_lines   = null;
 		ArrayList<String> removed_lines = null;
@@ -236,6 +239,7 @@ public class PrintPage extends JFrame {
 			new_file = readFile(curr).iterator();	
 		} catch(IOException ioe) { 
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in differ().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 
 		int j;
@@ -249,6 +253,7 @@ public class PrintPage extends JFrame {
 				old_file = readFile(prev).iterator();	
 			} catch(IOException ioe) {
 				//error
+				JOptionPane.showMessageDialog(this, "An IOException has been thrown in differ().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 			}
 
 			while(old_file.hasNext()) {
@@ -277,6 +282,7 @@ public class PrintPage extends JFrame {
 			list = readFile(f);	
 		} catch(IOException ioe) {
 			//error
+			JOptionPane.showMessageDialog(this, "An IOException has been thrown in lineCount().", "Exception Caught", JOptionPane.ERROR_MESSAGE);
 		}
 		return list.size();
 	}
