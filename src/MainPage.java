@@ -159,7 +159,9 @@ public class MainPage extends JFrame {
 			bufferedWriter.write(comment);
 			bufferedWriter.close();
 
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error
+		}
 	}
 
 	public void addVersion(File curr_f, File new_f) throws IOException {
@@ -300,7 +302,9 @@ public class MainPage extends JFrame {
                 	while((line = read.readLine()) != null) {
                 		list.add(line);
                 	} 
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error	
+		}
 
 		GridBagConstraints cp = new GridBagConstraints();
 		cp.anchor = GridBagConstraints.LINE_START;
@@ -409,7 +413,9 @@ public class MainPage extends JFrame {
 					addCommentDialog(curr_file.getName());
 					addVersion(curr_file, new_file); 	
             			} 
-				catch (IOException ioe) {}
+				catch (IOException ioe) {
+					//error
+				}
 
 				updateLists(curr_path); 
 				updateChanges();
@@ -453,7 +459,6 @@ public class MainPage extends JFrame {
 					File prev = getPreviousFile(file_map.get(s).getName()); 
 					if(prev != null)
 						new PrintPage("Report", prev.getAbsolutePath(), file_map.get(s).getAbsolutePath());
-						//new PrintPage("Report", file_map.get(s).getAbsolutePath(), prev.getAbsolutePath());
 				}
             		}
         	});
@@ -504,10 +509,12 @@ public class MainPage extends JFrame {
 		}
 		old_file = new File(backup_path + Integer.toString(version-2) + "_" + filename);
 		
-		if(version == 2)
+		if(version == 2) {
+			//error
 			return null;
-		else
+		} else {
 			return old_file; 
+		}
 	}
 	
 	//DRIVER FOR CLASS TESTING

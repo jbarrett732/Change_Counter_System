@@ -37,6 +37,7 @@ public class PrintPage extends JFrame {
 		//determine operation and execute
 		if(!file1.exists()) {
 			//error, file doesn't exist 
+			JOptionPane.showMessageDialog(this, "The file \""+file1.getName()+"\" does not exist!", "Missing File", JOptionPane.ERROR_MESSAGE);
 		} else if(op.equals("Listing")) { 
 			addContent(printListing());
 		} else if(op.equals("Changes")) {
@@ -45,6 +46,7 @@ public class PrintPage extends JFrame {
 			addContent(printReport());
 		} else {
 			//error, not valid operation
+			JOptionPane.showMessageDialog(this, "The operation \""+op+"\" is an invalid operation!", "Invalid Operation", JOptionPane.ERROR_MESSAGE);
 		}
 
 		//display window
@@ -53,7 +55,6 @@ public class PrintPage extends JFrame {
 
 
 	//ADDS CONTENT TO PAGE 
-//	public void addContent(String fileString) {
 	public void addContent(ArrayList<String> fileString) {
 
 		//create page heading panel
@@ -74,9 +75,6 @@ public class PrintPage extends JFrame {
 		JLabel heading = new JLabel("<html>" + info + "</html>");
 
 		//create panel to add content to it
-// 		JTextPane file_content = new JTextPane();
-// 		file_content.setEditable(false);
-// 		file_content.setText(fileString);
 		JPanel file_content = numberContent(fileString);
 
 		file_content.setBackground(Color.WHITE);
@@ -99,6 +97,7 @@ public class PrintPage extends JFrame {
 		for(i=1; it.hasNext(); i++) {
 			String cdl = "<html>" + it.next() + "</html>";
 			JLabel label = new JLabel(cdl);
+			label.setPreferredSize(new Dimension(500, 20));
 			fc.gridy = i-1;
 			file_content.add(label, fc);
 		}
@@ -107,14 +106,15 @@ public class PrintPage extends JFrame {
 	}
 
 	//PRINTS ONLY CONTENT OF FILE
-        //public String printListing() {
         public ArrayList<String> printListing() {
 
 		//read file into array list and catch exceptions
 		ArrayList<String> l = null;
 		try {
 		 	l = readFile(file1);
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error
+		}
 
 		//turn list into on long string
 		if(!l.isEmpty()) {
@@ -162,11 +162,15 @@ public class PrintPage extends JFrame {
 		ArrayList<String> all_lines   = null; 
 		try {
 			all_lines = readFile(file2);	
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error
+		}
 		ArrayList<String> other_lines   = null; 
 		try {
 			other_lines = readFile(file1);	
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error
+		}
 		ArrayList<String> added_lines   = null;
 		ArrayList<String> removed_lines = null;
 		added_lines   = differ(file1, file2);
@@ -230,7 +234,9 @@ public class PrintPage extends JFrame {
 		Iterator<String> new_file = null; 
 		try {
 			new_file = readFile(curr).iterator();	
-		} catch(IOException ioe) { }
+		} catch(IOException ioe) { 
+			//error
+		}
 
 		int j;
 		for(j=1; new_file.hasNext(); j++) {
@@ -241,7 +247,9 @@ public class PrintPage extends JFrame {
 			Iterator<String> old_file = null;
 			try {
 				old_file = readFile(prev).iterator();	
-			} catch(IOException ioe) {}
+			} catch(IOException ioe) {
+				//error
+			}
 
 			while(old_file.hasNext()) {
 				String old_line = old_file.next();	
@@ -267,7 +275,9 @@ public class PrintPage extends JFrame {
 		ArrayList<String> list = null;
 		try {
 			list = readFile(f);	
-		} catch(IOException ioe) {}
+		} catch(IOException ioe) {
+			//error
+		}
 		return list.size();
 	}
 

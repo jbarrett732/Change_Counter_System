@@ -1,0 +1,8 @@
+Hello
+My Name is John
+This is a test file for SE580
+Adding lines 1
+Adding lines 2
+Adding lines 8
+Adding lines 10
+Hello

@@ -59,6 +59,7 @@ public class ProjectPage extends JFrame {
     		if(returnVal == JFileChooser.APPROVE_OPTION) {
             		projects_dir = chooser.getSelectedFile();
     		} else {
+			//error
 			list_label.setText("No Project Folder Selected");	
 		}
 		addProjectList();
