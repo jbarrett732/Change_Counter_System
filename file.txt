@@ -1,8 +1,0 @@
-Hello
-My Name is John
-This is a test file for SE580
-Added Line 3
-More new lines
-More new lines 2
-Here are some changes
-Here are some changes 2

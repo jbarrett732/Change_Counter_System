@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
+//hello
 //CLASS FOR DIAPLAYING FILES 
 public class PrintPage extends JFrame {
 
@@ -38,8 +39,8 @@ public class PrintPage extends JFrame {
 			//error, file doesn't exist 
 		} else if(op.equals("Listing")) { 
 			addContent(printListing());
-		} else if(op.equals("Change")) {
-			//TODO - cycle 2
+		} else if(op.equals("Changes")) {
+		 	addContent(printChange());	
 		} else if(op.equals("Report")) {
 			addContent(printReport());
 		} else {
@@ -52,30 +53,33 @@ public class PrintPage extends JFrame {
 
 
 	//ADDS CONTENT TO PAGE 
-	public void addContent(String fileString) {
+//	public void addContent(String fileString) {
+	public void addContent(ArrayList<String> fileString) {
 
 		//create page heading panel
-		String info = "File Name: " + file1.getName() + "<br>";
-		if(operation.equals("Report")) {
+		String info = ""; 
+		if(operation.equals("Report") || operation.equals("Changes")) {
 			int numOld = lineCount(file1);
 			int numNew = lineCount(file2);
+			info = "File Name: " + file2.getName() + "<br>";
 			info += "Total Lines: " + Integer.toString(numNew) + "<br>"; 
 			info += "Lines Added: " + Integer.toString(numNew-numOld) + "<br>"; 
 			info += "Recent Change: " + (new Date(file2.lastModified())).toString() + "<br>";
 			info += "Previous Change: " + (new Date(file1.lastModified())).toString() + "<br>";
 		} else {
+			info = "File Name: " + file1.getName() + "<br>";
 			info += "Total Lines: " +  Integer.toString(lineCount(file1)) + "<br>"; 
 			info += "Recent Change: " + (new Date(file1.lastModified())).toString() + "<br>";
 		}
 		JLabel heading = new JLabel("<html>" + info + "</html>");
 
 		//create panel to add content to it
- 		JTextPane file_content = new JTextPane();
- 		file_content.setEditable(false);
- 		file_content.setText(fileString);
+// 		JTextPane file_content = new JTextPane();
+// 		file_content.setEditable(false);
+// 		file_content.setText(fileString);
+		JPanel file_content = numberContent(fileString);
 
 		file_content.setBackground(Color.WHITE);
-		//file_content.add(content);
 	  	JScrollPane scroll = new JScrollPane(file_content);	
 		scroll.setPreferredSize(new Dimension(500, 500));
 
@@ -84,9 +88,27 @@ public class PrintPage extends JFrame {
 		add(scroll, BorderLayout.WEST);	
     	}
 
+	public JPanel numberContent(ArrayList<String> slist) {
+ 		JPanel file_content = new JPanel(new GridBagLayout());
+                GridBagConstraints fc = new GridBagConstraints();
+                fc.anchor = GridBagConstraints.LINE_START;
+                fc.gridx = 0; fc.gridy = 0;
+
+		Iterator<String> it = slist.iterator();
+		int i;
+		for(i=1; it.hasNext(); i++) {
+			String cdl = "<html>" + it.next() + "</html>";
+			JLabel label = new JLabel(cdl);
+			fc.gridy = i-1;
+			file_content.add(label, fc);
+		}
+		
+		return file_content;
+	}
 
 	//PRINTS ONLY CONTENT OF FILE
-        public String printListing() {
+        //public String printListing() {
+        public ArrayList<String> printListing() {
 
 		//read file into array list and catch exceptions
 		ArrayList<String> l = null;
@@ -95,43 +117,87 @@ public class PrintPage extends JFrame {
 		} catch(IOException ioe) {}
 
 		//turn list into on long string
-		String fileContent = "";
 		if(!l.isEmpty()) {
-			Iterator<String> it = l.iterator();
-			while(it.hasNext()) {
-				fileContent += it.next() + "\n";
+			int i = l.size();
+			for(i=0; i<l.size(); i++) {
+				l.set(i, "<font color='black'>"+Integer.toString(i+1)+"&nbsp;&nbsp;&nbsp;&nbsp;"+l.get(i)+"</font>");
 			}	
 		}
 
-		return fileContent;
+		return l;
  	}
 
 
-	public String printReport() {
+	//public String printReport() {
+	public ArrayList<String> printReport() {
 
 		//read file into array list and catch exceptions
+		ArrayList<String> rt_lines   = new ArrayList<String>();
 		ArrayList<String> added_lines   = null;
 		ArrayList<String> removed_lines = null;
 		added_lines   = differ(file1, file2);
 		removed_lines = differ(file2, file1);
 
 		//turn list into on long string
-		String fileContent = "New and Changed Lines:\n";
 		if(!added_lines.isEmpty()) {
-			Iterator<String> it1 = added_lines.iterator();
-			while(it1.hasNext()) {
-				fileContent += it1.next() + "\n";
+			int i;
+			for(i=0; i<added_lines.size(); i++) {
+				rt_lines.add("<font color='green'>"+added_lines.get(i)+"</font>");
 			}	
 		}
-		fileContent += "\nRemoved Lines:\n";
 		if(!removed_lines.isEmpty()) {
-			Iterator<String> it2 = removed_lines.iterator();
-			while(it2.hasNext()) {
-				fileContent += it2.next() + "\n";
+			int i;
+			for(i=0; i<removed_lines.size(); i++) {
+				rt_lines.add("<font color='red'>"+removed_lines.get(i)+"</font>");
 			}	
 		}
 
-		return fileContent;
+		return rt_lines;
+	}
+
+
+	public ArrayList<String>printChange() {
+
+		//read file into array list and catch exceptions
+		ArrayList<String> all_lines   = null; 
+		try {
+			all_lines = readFile(file2);	
+		} catch(IOException ioe) {}
+		ArrayList<String> other_lines   = null; 
+		try {
+			other_lines = readFile(file1);	
+		} catch(IOException ioe) {}
+		ArrayList<String> added_lines   = null;
+		ArrayList<String> removed_lines = null;
+		added_lines   = differ(file1, file2);
+		removed_lines = differ(file2, file1);
+
+		int j;
+		for(j=0; j<all_lines.size(); j++) {
+			all_lines.set(j,Integer.toString(j+1)+"&nbsp;&nbsp;&nbsp;&nbsp;"+all_lines.get(j));
+			int k;
+			for(k=0; k<added_lines.size(); k++) {
+				String str_1 = all_lines.get(j).substring(all_lines.get(j).indexOf("&"));
+				String str_2 = added_lines.get(k).substring(added_lines.get(k).indexOf("&"));
+				if(str_1.equals(str_2)) {
+					all_lines.set(j,"<font color='green'>"+added_lines.get(k)+"</font>");
+				}
+			}
+		}	
+
+		for(j=other_lines.size()-1; j>-1; j--) {
+			other_lines.set(j,Integer.toString(j+1)+"&nbsp;&nbsp;&nbsp;&nbsp;"+other_lines.get(j));
+			int k;
+			for(k=0; k<removed_lines.size(); k++) {
+				String str_1 = other_lines.get(j).substring(other_lines.get(j).indexOf("&"));
+				String str_2 = removed_lines.get(k).substring(removed_lines.get(k).indexOf("&"));
+				if(str_1.equals(str_2)) {
+					all_lines.add(j,"<font color='red'>"+removed_lines.get(k)+"</font>");
+				}
+			}
+		}	
+
+		return all_lines;
 	}
 
 
@@ -166,7 +232,8 @@ public class PrintPage extends JFrame {
 			new_file = readFile(curr).iterator();	
 		} catch(IOException ioe) { }
 
-		while(new_file.hasNext()) {
+		int j;
+		for(j=1; new_file.hasNext(); j++) {
 			boolean match = false;
 			String new_line = new_file.next();
 
@@ -187,8 +254,8 @@ public class PrintPage extends JFrame {
 			
 			//add new line to return array
 			if(!match) {
-				added.add(new_line);	
-			}
+				added.add(Integer.toString(j)+"&nbsp;&nbsp;&nbsp;&nbsp;"+new_line);	
+			} 
 		}
 		return added;
 	}

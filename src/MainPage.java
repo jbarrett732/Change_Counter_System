@@ -438,8 +438,11 @@ public class MainPage extends JFrame {
         	button_changes.addActionListener(new ActionListener() {
             		public void actionPerformed(ActionEvent e) {
 				String s = getSelectedItem(false);
-				//if(s != null) 
-				//	new PrintPage("Changes", file_map.get(s).getAbsolutePath(), file_map.get(s).getAbsolutePath());
+				if(s != null) { 
+					File prev = getPreviousFile(file_map.get(s).getName()); 
+					if(prev != null)
+						new PrintPage("Changes", prev.getAbsolutePath(), file_map.get(s).getAbsolutePath());
+				}
             		}
         	});
 		JButton button_report = new JButton("<html>Print Program<br>Change Report</html>");
